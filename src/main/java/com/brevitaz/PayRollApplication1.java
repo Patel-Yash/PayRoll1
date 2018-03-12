@@ -7,10 +7,10 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @ComponentScan("com.brevitaz")
-public class PayRollApplication {
+public class PayRollApplication1 {
 
     public static void main(String[] args) {
-        SpringApplication.run(PayRollApplication.class, args);
+        SpringApplication.run(PayRollApplication1.class, args);
     }
 }
 
