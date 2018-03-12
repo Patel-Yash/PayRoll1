@@ -1,5 +1,7 @@
 package com.brevitaz.model;
 
+import java.util.Date;
+
 public class Salary {
 
     private String id;
@@ -8,6 +10,10 @@ public class Salary {
     private double grossSalary;
     private double variablePay;
     private double otherAllowance;
+    private Date createdDate;
+    private String createdBy;
+    private Date updatedDate;
+    private String updatedBy;
 
     public String getId() {
         return id;
@@ -57,6 +63,38 @@ public class Salary {
         this.otherAllowance = otherAllowance;
     }
 
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public Date getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(Date updatedDate) {
+        this.updatedDate = updatedDate;
+    }
+
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
     @Override
     public String toString() {
         return "Salary{" +
@@ -66,6 +104,10 @@ public class Salary {
                 ", grossSalary=" + grossSalary +
                 ", variablePay=" + variablePay +
                 ", otherAllowance=" + otherAllowance +
+                ", createdDate=" + createdDate +
+                ", createdBy='" + createdBy + '\'' +
+                ", updatedDate=" + updatedDate +
+                ", updatedBy='" + updatedBy + '\'' +
                 '}';
     }
 }

@@ -1,7 +1,7 @@
 package com.brevitaz.model;
 
 
-public class SalaryStructureComponent {
+public class SalaryIncomeComponent {
 
     private String id;
     private String displayName;
@@ -52,7 +52,7 @@ public class SalaryStructureComponent {
 
     @Override
     public String toString() {
-        return "SalaryStructureComponent{" +
+        return "SalaryIncomeComponent{" +
                 "id='" + id + '\'' +
                 ", displayName='" + displayName + '\'' +
                 ", name='" + name + '\'' +
@@ -61,13 +61,12 @@ public class SalaryStructureComponent {
                 '}';
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        SalaryStructureComponent that = (SalaryStructureComponent) o;
+        SalaryIncomeComponent that = (SalaryIncomeComponent) o;
 
         if (Double.compare(that.value, value) != 0) return false;
         if (!id.equals(that.id)) return false;

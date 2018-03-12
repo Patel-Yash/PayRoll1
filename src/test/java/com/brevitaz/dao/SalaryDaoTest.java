@@ -3,36 +3,22 @@ package com.brevitaz.dao;
 
 import com.brevitaz.model.Employee;
 import com.brevitaz.model.Salary;
-import com.carrotsearch.randomizedtesting.RandomizedRunner;
-import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
 import org.junit.Assert;
-import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.junit4.rules.SpringClassRule;
-import org.springframework.test.context.junit4.rules.SpringMethodRule;
 
 import java.io.IOException;
 import java.util.List;
 
-@RunWith(RandomizedRunner.class)
-@ThreadLeakScope(ThreadLeakScope.Scope.NONE)
+@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 public class SalaryDaoTest
 {
     @Autowired
     SalaryDao salaryDao;
-
-    @ClassRule
-    public static final SpringClassRule SPRING_CLASS_RULE = new SpringClassRule();
-
-    @Rule
-    public final SpringMethodRule springMethodRule = new SpringMethodRule();
-
 
     @Test
     public void createTest() throws IOException {
@@ -43,7 +29,6 @@ public class SalaryDaoTest
         salary.setGrossSalary(1200000);
         salary.setVariablePay(60000);
         salary.setOtherAllowance(20000);
-        salaryDao.create(salary);
 
         Salary salary1 = salaryDao.getById("1");
         Assert.assertEquals(salary1.getEmployeeId(),salary.getEmployeeId());
@@ -71,10 +56,7 @@ public class SalaryDaoTest
         salaryDao.create(salary1);
 
         List<Salary> salaries = salaryDao.getAll();
-        int size = salaries.size();
-
-        System.out.println(size);
-        Assert.assertEquals(2,size);
+        Assert.assertEquals(2,salaries);
         salaryDao.delete("1");
         salaryDao.delete("2");
     }

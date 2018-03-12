@@ -59,15 +59,35 @@ public class Employee {
         this.location = location;
     }
 
+
+
     @Override
     public String toString() {
         return "Employee{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", department='" + department + '\'' +
+
                 ", dateOfJoining=" + dateOfJoining +
                 ", designation='" + designation + '\'' +
                 ", location='" + location + '\'' +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Employee employee = (Employee) o;
+
+        if (!id.equals(employee.id)) return false;
+        if (!name.equals(employee.name)) return false;
+        if (!department.equals(employee.department)) return false;
+        if (!dateOfJoining.equals(employee.dateOfJoining)) return false;
+        if (!designation.equals(employee.designation)) return false;
+        return location.equals(employee.location);
+    }
+
+
 }

@@ -15,6 +15,7 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
@@ -33,11 +34,14 @@ public class SalaryStructureDaoImpl implements SalaryStructureDao {
     private String indexName;
 
     @Autowired
-    private Config config;
+    private RestHighLevelClient client;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Override
     public boolean create(SalaryStructure salaryStructure) {
-        config.getObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         try {
             IndexRequest request = new IndexRequest(
@@ -45,11 +49,11 @@ public class SalaryStructureDaoImpl implements SalaryStructureDao {
                     TYPE_NAME, salaryStructure.getId()
             );
 
-            String json = config.getObjectMapper().writeValueAsString(salaryStructure);
+            String json = objectMapper.writeValueAsString(salaryStructure);
 
             request.source(json, XContentType.JSON);
 
-            IndexResponse indexResponse = config.getClient().index(request);
+            IndexResponse indexResponse = client.index(request);
 
             System.out.println(indexResponse);
             if (indexResponse.status() == RestStatus.CREATED) {
@@ -69,13 +73,13 @@ public class SalaryStructureDaoImpl implements SalaryStructureDao {
         try {
             SearchRequest request = new SearchRequest(indexName);
             request.types(TYPE_NAME);
-            SearchResponse response = config.getClient().search(request);
+            SearchResponse response = client.search(request);
             SearchHit[] hits = response.getHits().getHits();
 
             SalaryStructure salaryStructure;
 
             for (SearchHit hit : hits) {
-                salaryStructure = config.getObjectMapper().readValue(hit.getSourceAsString(), SalaryStructure.class);
+                salaryStructure =objectMapper.readValue(hit.getSourceAsString(), SalaryStructure.class);
                 salaryStructures.add(salaryStructure);
             }
             if (response.status() == RestStatus.OK) {
@@ -91,12 +95,12 @@ public class SalaryStructureDaoImpl implements SalaryStructureDao {
 
     @Override
     public boolean update(SalaryStructure salaryStructure, String id) {
-        ObjectMapper objectMapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         try {
             UpdateRequest updateRequest = new UpdateRequest(
                     indexName, TYPE_NAME,
                     id).doc(objectMapper.writeValueAsString(salaryStructure), XContentType.JSON);
-            UpdateResponse updateResponse = config.getClient().update(updateRequest);
+            UpdateResponse updateResponse = client.update(updateRequest);
             System.out.println("Update: " + updateResponse);
             if (updateResponse.status() == RestStatus.OK) {
                 return true;
@@ -116,7 +120,7 @@ public class SalaryStructureDaoImpl implements SalaryStructureDao {
                 TYPE_NAME,
                 id);
         try {
-            DeleteResponse response = config.getClient().delete(request);
+            DeleteResponse response = client.delete(request);
 
             System.out.println(response.status());
 
@@ -139,9 +143,9 @@ public class SalaryStructureDaoImpl implements SalaryStructureDao {
                 TYPE_NAME,
                 id);
         try {
-            GetResponse getResponse = config.getClient().get(getRequest);
+            GetResponse getResponse = client.get(getRequest);
 
-            SalaryStructure salaryStructure = config.getObjectMapper().readValue(getResponse.getSourceAsString(), SalaryStructure.class);
+            SalaryStructure salaryStructure = objectMapper.readValue(getResponse.getSourceAsString(), SalaryStructure.class);
 
             System.out.println(salaryStructure);
             if (getResponse.isExists())

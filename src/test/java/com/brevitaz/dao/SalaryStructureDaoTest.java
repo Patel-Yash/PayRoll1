@@ -1,18 +1,14 @@
 package com.brevitaz.dao;
 
+import com.brevitaz.model.SalaryIncomeComponent;
 import com.brevitaz.model.SalaryStructure;
-import com.brevitaz.model.SalaryStructureComponent;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,40 +21,40 @@ public class SalaryStructureDaoTest
 
     @Test
     public void createTest() {
-        SalaryStructureComponent salaryStructureComponent = new SalaryStructureComponent();
-        salaryStructureComponent.setId("11");
-        salaryStructureComponent.setDisplayName("Basic");
-        salaryStructureComponent.setName("Basic@12%");
-        salaryStructureComponent.setValue(12);
+        SalaryIncomeComponent salaryIncomeComponent = new SalaryIncomeComponent();
+        salaryIncomeComponent.setId("11");
+        salaryIncomeComponent.setDisplayName("Basic");
+        salaryIncomeComponent.setName("Basic@12%");
+        salaryIncomeComponent.setValue(12);
 
-        List<SalaryStructureComponent>salaryStructureComponents = new ArrayList<>();
-        salaryStructureComponents.add(salaryStructureComponent);
+        List<SalaryIncomeComponent> salaryIncomeComponents = new ArrayList<>();
+        salaryIncomeComponents.add(salaryIncomeComponent);
 
         SalaryStructure salaryStructure = new SalaryStructure();
         salaryStructure.setId("11");
-        salaryStructure.setSalaryStructureComponents(salaryStructureComponents);
+        salaryStructure.setSalaryIncomeComponents(salaryIncomeComponents);
         salaryStructureDao.create(salaryStructure);
 
         SalaryStructure salaryStructure1 = salaryStructureDao.getById("11");
-        Assert.assertEquals(salaryStructure1.getSalaryStructureComponents(),salaryStructure.getSalaryStructureComponents());
+        Assert.assertEquals(salaryStructure1.getSalaryIncomeComponents(),salaryStructure.getSalaryIncomeComponents());
 
         salaryStructureDao.delete("11");
     }
 
     @Test
     public void getAllTest()  {
-        SalaryStructureComponent salaryStructureComponent = new SalaryStructureComponent();
-        salaryStructureComponent.setId("11");
-        salaryStructureComponent.setDisplayName("Basic");
-        salaryStructureComponent.setName("Basic@12%");
-        salaryStructureComponent.setValue(12);
+        SalaryIncomeComponent salaryIncomeComponent = new SalaryIncomeComponent();
+        salaryIncomeComponent.setId("11");
+        salaryIncomeComponent.setDisplayName("Basic");
+        salaryIncomeComponent.setName("Basic@12%");
+        salaryIncomeComponent.setValue(12);
 
-        List<SalaryStructureComponent>salaryStructureComponents = new ArrayList<>();
-        salaryStructureComponents.add(salaryStructureComponent);
+        List<SalaryIncomeComponent> salaryIncomeComponents = new ArrayList<>();
+        salaryIncomeComponents.add(salaryIncomeComponent);
 
         SalaryStructure salaryStructure = new SalaryStructure();
         salaryStructure.setId("11");
-        salaryStructure.setSalaryStructureComponents(salaryStructureComponents);
+        salaryStructure.setSalaryIncomeComponents(salaryIncomeComponents);
         salaryStructureDao.create(salaryStructure);
 
         try {
@@ -77,37 +73,37 @@ public class SalaryStructureDaoTest
     @Test
     public void updateTest()  {
 
-        SalaryStructureComponent salaryStructureComponent = new SalaryStructureComponent();
-        salaryStructureComponent.setId("11");
-        salaryStructureComponent.setDisplayName("Basic");
-        salaryStructureComponent.setName("Basic@12%");
-        salaryStructureComponent.setValue(12);
+        SalaryIncomeComponent salaryIncomeComponent = new SalaryIncomeComponent();
+        salaryIncomeComponent.setId("11");
+        salaryIncomeComponent.setDisplayName("Basic");
+        salaryIncomeComponent.setName("Basic@12%");
+        salaryIncomeComponent.setValue(12);
 
-        List<SalaryStructureComponent>salaryStructureComponents = new ArrayList<>();
-        salaryStructureComponents.add(salaryStructureComponent);
+        List<SalaryIncomeComponent> salaryIncomeComponents = new ArrayList<>();
+        salaryIncomeComponents.add(salaryIncomeComponent);
 
         SalaryStructure salaryStructure = new SalaryStructure();
         salaryStructure.setId("11");
-        salaryStructure.setSalaryStructureComponents(salaryStructureComponents);
+        salaryStructure.setSalaryIncomeComponents(salaryIncomeComponents);
         salaryStructureDao.create(salaryStructure);
 
 
-        SalaryStructureComponent salaryStructureComponent1 = new SalaryStructureComponent();
-        salaryStructureComponent1.setId("11");
-        salaryStructureComponent1.setDisplayName("HRA");
-        salaryStructureComponent1.setName("HRA@20%");
-        salaryStructureComponent1.setValue(20);
+        SalaryIncomeComponent salaryIncomeComponent1 = new SalaryIncomeComponent();
+        salaryIncomeComponent1.setId("11");
+        salaryIncomeComponent1.setDisplayName("HRA");
+        salaryIncomeComponent1.setName("HRA@20%");
+        salaryIncomeComponent1.setValue(20);
 
-        List<SalaryStructureComponent>salaryStructureComponents1 = new ArrayList<>();
-        salaryStructureComponents1.add(salaryStructureComponent1);
+        List<SalaryIncomeComponent> salaryIncomeComponents1 = new ArrayList<>();
+        salaryIncomeComponents1.add(salaryIncomeComponent1);
 
         SalaryStructure salaryStructure1 = new SalaryStructure();
-        salaryStructure1.setSalaryStructureComponents(salaryStructureComponents1);
+        salaryStructure1.setSalaryIncomeComponents(salaryIncomeComponents1);
 
         salaryStructureDao.update(salaryStructure1,"11");
 
         SalaryStructure salaryStructure2 = salaryStructureDao.getById("11");
-        Assert.assertEquals(salaryStructure2.getSalaryStructureComponents(),salaryStructure1.getSalaryStructureComponents());
+        Assert.assertEquals(salaryStructure2.getSalaryIncomeComponents(),salaryStructure1.getSalaryIncomeComponents());
 
         salaryStructureDao.delete("11");
     }
@@ -115,18 +111,18 @@ public class SalaryStructureDaoTest
     @Test
     public void deleteTest() {
 
-        SalaryStructureComponent salaryStructureComponent = new SalaryStructureComponent();
-        salaryStructureComponent.setId("11");
-        salaryStructureComponent.setDisplayName("Basic");
-        salaryStructureComponent.setName("Basic@12%");
-        salaryStructureComponent.setValue(12);
+        SalaryIncomeComponent salaryIncomeComponent = new SalaryIncomeComponent();
+        salaryIncomeComponent.setId("11");
+        salaryIncomeComponent.setDisplayName("Basic");
+        salaryIncomeComponent.setName("Basic@12%");
+        salaryIncomeComponent.setValue(12);
 
-        List<SalaryStructureComponent>salaryStructureComponents = new ArrayList<>();
-        salaryStructureComponents.add(salaryStructureComponent);
+        List<SalaryIncomeComponent> salaryIncomeComponents = new ArrayList<>();
+        salaryIncomeComponents.add(salaryIncomeComponent);
 
         SalaryStructure salaryStructure = new SalaryStructure();
         salaryStructure.setId("11");
-        salaryStructure.setSalaryStructureComponents(salaryStructureComponents);
+        salaryStructure.setSalaryIncomeComponents(salaryIncomeComponents);
         salaryStructureDao.create(salaryStructure);
 
         salaryStructureDao.delete("11");
@@ -140,22 +136,22 @@ public class SalaryStructureDaoTest
     @Test
     public void getByIdTest() {
 
-        SalaryStructureComponent salaryStructureComponent = new SalaryStructureComponent();
-        salaryStructureComponent.setId("11");
-        salaryStructureComponent.setDisplayName("Basic");
-        salaryStructureComponent.setName("Basic@12%");
-        salaryStructureComponent.setValue(12);
+        SalaryIncomeComponent salaryIncomeComponent = new SalaryIncomeComponent();
+        salaryIncomeComponent.setId("11");
+        salaryIncomeComponent.setDisplayName("Basic");
+        salaryIncomeComponent.setName("Basic@12%");
+        salaryIncomeComponent.setValue(12);
 
-        List<SalaryStructureComponent>salaryStructureComponents = new ArrayList<>();
-        salaryStructureComponents.add(salaryStructureComponent);
+        List<SalaryIncomeComponent> salaryIncomeComponents = new ArrayList<>();
+        salaryIncomeComponents.add(salaryIncomeComponent);
 
         SalaryStructure salaryStructure = new SalaryStructure();
         salaryStructure.setId("11");
-        salaryStructure.setSalaryStructureComponents(salaryStructureComponents);
+        salaryStructure.setSalaryIncomeComponents(salaryIncomeComponents);
         salaryStructureDao.create(salaryStructure);
 
         SalaryStructure salaryStructure1 = salaryStructureDao.getById("11");
-        Assert.assertEquals(salaryStructure1.getSalaryStructureComponents(),salaryStructure.getSalaryStructureComponents());
+        Assert.assertEquals(salaryStructure1.getSalaryIncomeComponents(),salaryStructure.getSalaryIncomeComponents());
 
         salaryStructureDao.delete("11");
     }

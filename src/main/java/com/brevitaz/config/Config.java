@@ -45,6 +45,7 @@ public class Config
     public void setClient(RestHighLevelClient client) {
         this.client = client;
     }
+
     @Bean
     public ObjectMapper getObjectMapper() {
         if(objectMapper == null)

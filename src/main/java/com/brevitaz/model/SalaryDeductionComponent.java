@@ -7,11 +7,7 @@ public class SalaryDeductionComponent {
     private String displayName;
     private String name;
     private Type type;
-    private enum Type {PERCENTAGE,FIXED_VALUE;}
     private double value;
-    private Condition condition;
-
-
 
     public Type getType() {
         return type;
@@ -28,7 +24,6 @@ public class SalaryDeductionComponent {
     public void setId(String id) {
         this.id = id;
     }
-
 
     public String getDisplayName() {
         return displayName;
@@ -54,10 +49,9 @@ public class SalaryDeductionComponent {
         this.value = value;
     }
 
-
     @Override
     public String toString() {
-        return "SalaryStructureComponent{" +
+        return "SalaryIncomeComponent{" +
                 "id='" + id + '\'' +
                 ", displayName='" + displayName + '\'' +
                 ", name='" + name + '\'' +
@@ -66,4 +60,17 @@ public class SalaryDeductionComponent {
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SalaryDeductionComponent that = (SalaryDeductionComponent) o;
+
+        if (Double.compare(that.value, value) != 0) return false;
+        if (!id.equals(that.id)) return false;
+        if (!displayName.equals(that.displayName)) return false;
+        if (!name.equals(that.name)) return false;
+        return type == that.type;
+    }
 }

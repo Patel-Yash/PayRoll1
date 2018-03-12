@@ -15,6 +15,7 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
@@ -33,12 +34,15 @@ public class SalarySlipDaoImpl implements SalarySlipDao {
     private String indexName;
 
     @Autowired
-    private Config config;
+    private RestHighLevelClient client;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
 
     @Override
     public boolean create(SalarySlip salarySlip) {
-        config.getObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         try {
             IndexRequest request = new IndexRequest(
@@ -46,11 +50,11 @@ public class SalarySlipDaoImpl implements SalarySlipDao {
                     TYPE_NAME, salarySlip.getId()
             );
 
-            String json = config.getObjectMapper().writeValueAsString(salarySlip);
+            String json = objectMapper.writeValueAsString(salarySlip);
 
             request.source(json, XContentType.JSON);
 
-            IndexResponse indexResponse = config.getClient().index(request);
+            IndexResponse indexResponse = client.index(request);
 
             System.out.println(indexResponse);
             if (indexResponse.status() == RestStatus.CREATED) {
@@ -70,13 +74,13 @@ public class SalarySlipDaoImpl implements SalarySlipDao {
             List<SalarySlip> salarySlips = new ArrayList<>();
             SearchRequest request = new SearchRequest(indexName);
             request.types(TYPE_NAME);
-            SearchResponse response = config.getClient().search(request);
+            SearchResponse response = client.search(request);
             SearchHit[] hits = response.getHits().getHits();
 
             SalarySlip salarySlip;
 
             for (SearchHit hit : hits) {
-                salarySlip = config.getObjectMapper().readValue(hit.getSourceAsString(), SalarySlip.class);
+                salarySlip = objectMapper.readValue(hit.getSourceAsString(), SalarySlip.class);
                 salarySlips.add(salarySlip);
             }
             if (response.status() == RestStatus.OK) {
@@ -94,11 +98,11 @@ public class SalarySlipDaoImpl implements SalarySlipDao {
     @Override
     public boolean update(SalarySlip salarySlip, String id) {
         try {
-            ObjectMapper objectMapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
+            objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
             UpdateRequest updateRequest = new UpdateRequest(
                     indexName, TYPE_NAME,
                     id).doc(objectMapper.writeValueAsString(salarySlip), XContentType.JSON);
-            UpdateResponse updateResponse = config.getClient().update(updateRequest);
+            UpdateResponse updateResponse = client.update(updateRequest);
             System.out.println("Update: " + updateResponse);
             if (updateResponse.status() == RestStatus.OK) {
                 return true;
@@ -119,7 +123,7 @@ public class SalarySlipDaoImpl implements SalarySlipDao {
                     TYPE_NAME,
                     id);
 
-            DeleteResponse response = config.getClient().delete(request);
+            DeleteResponse response = client.delete(request);
 
             System.out.println(response.status());
 
@@ -143,9 +147,9 @@ public class SalarySlipDaoImpl implements SalarySlipDao {
                     TYPE_NAME,
                     id);
 
-            GetResponse getResponse = config.getClient().get(getRequest);
+            GetResponse getResponse = client.get(getRequest);
 
-            SalarySlip salarySlip = config.getObjectMapper().readValue(getResponse.getSourceAsString(), SalarySlip.class);
+            SalarySlip salarySlip = objectMapper.readValue(getResponse.getSourceAsString(), SalarySlip.class);
 
             System.out.println(salarySlip);
             if (getResponse.isExists())
