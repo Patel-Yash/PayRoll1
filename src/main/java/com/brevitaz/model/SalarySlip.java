@@ -13,6 +13,7 @@ public class SalarySlip {
     private String createdBy;
     private Date updatedDate;
     private String updatedBy;
+    private Status status;
 
     public String getId() {
         return id;
@@ -86,6 +87,14 @@ public class SalarySlip {
         this.updatedBy = updatedBy;
     }
 
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return "SalarySlip{" +
@@ -98,6 +107,7 @@ public class SalarySlip {
                 ", createdBy='" + createdBy + '\'' +
                 ", updatedDate=" + updatedDate +
                 ", updatedBy='" + updatedBy + '\'' +
+                ", status=" + status +
                 '}';
     }
 }

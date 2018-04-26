@@ -2,6 +2,8 @@ package com.brevitaz.dao.impl;
 
 import com.brevitaz.config.Config;
 import com.brevitaz.dao.SalarySlipDao;
+import com.brevitaz.errors.InvalidIdException;
+import com.brevitaz.model.Salary;
 import com.brevitaz.model.SalarySlip;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,32 +19,35 @@ import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 
 @Repository
 public class SalarySlipDaoImpl implements SalarySlipDao {
     private final String TYPE_NAME = "doc";
 
-    @Value("${SalarySlip-Index-Name}")
+    @Value("${elasticsearch.SalarySlip-IndexName}")
     private String indexName;
 
     @Autowired
-    private RestHighLevelClient client;
-
-    @Autowired
-    private ObjectMapper objectMapper;
+    private Config config;
 
 
     @Override
     public boolean create(SalarySlip salarySlip) {
-        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        config.getObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         try {
             IndexRequest request = new IndexRequest(
@@ -50,11 +55,11 @@ public class SalarySlipDaoImpl implements SalarySlipDao {
                     TYPE_NAME, salarySlip.getId()
             );
 
-            String json = objectMapper.writeValueAsString(salarySlip);
+            String json = config.getObjectMapper().writeValueAsString(salarySlip);
 
             request.source(json, XContentType.JSON);
 
-            IndexResponse indexResponse = client.index(request);
+            IndexResponse indexResponse = config.getClient().index(request);
 
             System.out.println(indexResponse);
             if (indexResponse.status() == RestStatus.CREATED) {
@@ -74,13 +79,13 @@ public class SalarySlipDaoImpl implements SalarySlipDao {
             List<SalarySlip> salarySlips = new ArrayList<>();
             SearchRequest request = new SearchRequest(indexName);
             request.types(TYPE_NAME);
-            SearchResponse response = client.search(request);
+            SearchResponse response = config.getClient().search(request);
             SearchHit[] hits = response.getHits().getHits();
 
             SalarySlip salarySlip;
 
             for (SearchHit hit : hits) {
-                salarySlip = objectMapper.readValue(hit.getSourceAsString(), SalarySlip.class);
+                salarySlip = config.getObjectMapper().readValue(hit.getSourceAsString(), SalarySlip.class);
                 salarySlips.add(salarySlip);
             }
             if (response.status() == RestStatus.OK) {
@@ -96,13 +101,13 @@ public class SalarySlipDaoImpl implements SalarySlipDao {
     }
 
     @Override
-    public boolean update(SalarySlip salarySlip, String id) {
+    public boolean update(String id,SalarySlip salarySlip) {
         try {
-            objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+            config.getObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
             UpdateRequest updateRequest = new UpdateRequest(
                     indexName, TYPE_NAME,
-                    id).doc(objectMapper.writeValueAsString(salarySlip), XContentType.JSON);
-            UpdateResponse updateResponse = client.update(updateRequest);
+                    id).doc(config.getObjectMapper().writeValueAsString(salarySlip), XContentType.JSON);
+            UpdateResponse updateResponse = config.getClient().update(updateRequest);
             System.out.println("Update: " + updateResponse);
             if (updateResponse.status() == RestStatus.OK) {
                 return true;
@@ -115,7 +120,7 @@ public class SalarySlipDaoImpl implements SalarySlipDao {
         return false;
     }
 
-    @Override
+   /* @Override
     public boolean delete(String id) {
         try {
             DeleteRequest request = new DeleteRequest(
@@ -123,7 +128,7 @@ public class SalarySlipDaoImpl implements SalarySlipDao {
                     TYPE_NAME,
                     id);
 
-            DeleteResponse response = client.delete(request);
+            DeleteResponse response = config.getClient().delete(request);
 
             System.out.println(response.status());
 
@@ -138,7 +143,7 @@ public class SalarySlipDaoImpl implements SalarySlipDao {
         }
         return false;
     }
-
+*/
     @Override
     public SalarySlip getById(String id) {
         try {
@@ -147,9 +152,9 @@ public class SalarySlipDaoImpl implements SalarySlipDao {
                     TYPE_NAME,
                     id);
 
-            GetResponse getResponse = client.get(getRequest);
+            GetResponse getResponse = config.getClient().get(getRequest);
 
-            SalarySlip salarySlip = objectMapper.readValue(getResponse.getSourceAsString(), SalarySlip.class);
+            SalarySlip salarySlip = config.getObjectMapper().readValue(getResponse.getSourceAsString(), SalarySlip.class);
 
             System.out.println(salarySlip);
             if (getResponse.isExists())
@@ -161,9 +166,116 @@ public class SalarySlipDaoImpl implements SalarySlipDao {
                 return null;
             }
         }
-        catch (Exception e)
+        catch (IOException |NullPointerException e)
+        {
+            throw new InvalidIdException("Id doesnot exists!!!");
+        }
+    }
+
+    @Override
+    public List<SalarySlip> getByEmployeeId(String employeeId) {
+        try {
+
+            SearchRequest request = new SearchRequest(indexName);
+            request.types(TYPE_NAME);
+
+            SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+
+            sourceBuilder.query(QueryBuilders.boolQuery().must(matchQuery("employeeId", employeeId)));
+            request.source(sourceBuilder);
+
+            SearchResponse response = config.getClient().search(request);
+            if(response.status() == RestStatus.OK) {
+                List<SalarySlip> salarySlips=new ArrayList<>();
+
+                SearchHit[] hits = response.getHits().getHits();
+
+                SalarySlip salarySlip;
+                for (SearchHit hit : hits)
+                {
+                    salarySlip = config.getObjectMapper().readValue(hit.getSourceAsString(),SalarySlip.class);
+                    salarySlips.add(salarySlip);
+                }
+
+                return salarySlips;
+            }
+        } catch (IOException | NullPointerException e) {
+            throw new InvalidIdException("doesn't exists!!!");
+        }
+        return null;
+    }
+
+
+    @Override
+    public List<SalarySlip> getByMonth(String month) {
+        try {
+
+            SearchRequest request = new SearchRequest(indexName);
+            request.types(TYPE_NAME);
+
+            SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+
+            sourceBuilder.query(QueryBuilders.boolQuery().must(matchQuery("month",month)));
+            request.source(sourceBuilder);
+
+            SearchResponse response = config.getClient().search(request);
+            if(response.status() == RestStatus.OK) {
+                List<SalarySlip> salarySlips=new ArrayList<>();
+
+                SearchHit[] hits = response.getHits().getHits();
+
+                SalarySlip salarySlip;
+                for (SearchHit hit : hits)
+                {
+                    salarySlip = config.getObjectMapper().readValue(hit.getSourceAsString(),SalarySlip.class);
+                    salarySlips.add(salarySlip);
+                }
+
+                return salarySlips;
+            }
+        } catch (IOException | NullPointerException e) {
+            throw new InvalidIdException("doesn't exists!!!");
+        }
+        return null;
+
+    }
+
+    @Override
+    public SalarySlip getLatestSalarySlip(List<SalarySlip> salarySlips) {
+        try {
+            //List<SalarySlip> salarySlips = new ArrayList<>();
+
+            SearchRequest request = new SearchRequest(indexName);
+            request.types(TYPE_NAME);
+
+            SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+            sourceBuilder.sort("createdDate", SortOrder.DESC);
+
+            request.source(sourceBuilder);
+
+            SearchResponse response = config.getClient().search(request);
+            if(response.status() == RestStatus.OK)
+            {
+
+                SearchHit[] hits = response.getHits().getHits();
+                SalarySlip salarySlip;
+
+                for (SearchHit hit : hits)
+                {
+                    salarySlip = config.getObjectMapper().readValue(hit.getSourceAsString(), SalarySlip.class);
+                    salarySlips.add(salarySlip);
+                }
+                return salarySlips.get(0);
+            }
+            else
+            {
+                return null;
+            }
+        }
+        catch (IOException e)
         {
             e.printStackTrace();
+            //  throw new IndexNotFoundException("Index doesn't exists!!!");
         }
         return null;
     }

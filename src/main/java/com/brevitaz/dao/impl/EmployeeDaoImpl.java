@@ -32,18 +32,16 @@ public class EmployeeDaoImpl implements EmployeeDao
 {
     private final String TYPE_NAME = "doc";
 
-    @Value("${Employee-Index-Name}")
+    @Value("${elasticsearch.Employee-IndexName}")
     private String indexName;
 
     @Autowired
-    private RestHighLevelClient client;
+    private Config config;
 
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Override
     public boolean create(Employee employee){
-        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        config.getObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         IndexRequest request = new IndexRequest(
                 indexName,
@@ -51,9 +49,9 @@ public class EmployeeDaoImpl implements EmployeeDao
         );
 
         try {
-            String json = objectMapper.writeValueAsString(employee);
+            String json = config.getObjectMapper().writeValueAsString(employee);
             request.source(json, XContentType.JSON);
-            IndexResponse indexResponse = client.index(request);
+            IndexResponse indexResponse = config.getClient().index(request);
             System.out.println(indexResponse);
             if(indexResponse.status() == RestStatus.CREATED)
             {
@@ -76,14 +74,14 @@ public class EmployeeDaoImpl implements EmployeeDao
         request.types(TYPE_NAME);
 
         try {
-            SearchResponse response = client.search(request);
+            SearchResponse response = config.getClient().search(request);
             SearchHit[] hits = response.getHits().getHits();
 
             Employee employee;
 
             for (SearchHit hit : hits)
             {
-                employee = objectMapper.readValue(hit.getSourceAsString(), Employee.class);
+                employee = config.getObjectMapper().readValue(hit.getSourceAsString(), Employee.class);
                 employees.add(employee);
             }
 
@@ -103,13 +101,13 @@ public class EmployeeDaoImpl implements EmployeeDao
     }
 
     @Override
-    public boolean update(Employee employee,String id) {
-        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    public boolean update(String id,Employee employee) {
+        config.getObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
         try {
             UpdateRequest updateRequest = new UpdateRequest(
                     indexName,TYPE_NAME,
-                    id).doc(objectMapper.writeValueAsString(employee), XContentType.JSON);
-            UpdateResponse updateResponse = client.update(updateRequest);
+                    id).doc(config.getObjectMapper().writeValueAsString(employee), XContentType.JSON);
+            UpdateResponse updateResponse = config.getClient().update(updateRequest);
             System.out.println("Update: "+updateResponse);
             if(updateResponse.status() == RestStatus.OK)
             {
@@ -133,7 +131,7 @@ public class EmployeeDaoImpl implements EmployeeDao
                 id);
 
         try {
-            DeleteResponse response = client.delete(request);
+            DeleteResponse response = config.getClient().delete(request);
             if(response.status() == RestStatus.OK)
             {
                 return true;
@@ -158,8 +156,8 @@ public class EmployeeDaoImpl implements EmployeeDao
 
         try {
 
-            GetResponse response = client.get(getRequest);
-            Employee employee = objectMapper.readValue(response.getSourceAsString(), Employee.class);
+            GetResponse response = config.getClient().get(getRequest);
+            Employee employee = config.getObjectMapper().readValue(response.getSourceAsString(), Employee.class);
             if (response.isExists()) {
                 return employee;
             } else {

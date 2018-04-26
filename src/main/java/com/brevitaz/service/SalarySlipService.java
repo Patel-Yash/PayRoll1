@@ -1,22 +1,18 @@
-package com.brevitaz.dao;
-
+package com.brevitaz.service;
 
 import com.brevitaz.model.SalarySlip;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
-public interface SalarySlipDao
+public interface SalarySlipService
 {
     public boolean create(SalarySlip salarySlip);
     public List<SalarySlip> getAll() ;
     public boolean update(String id,SalarySlip salarySlip) ;
-    //public boolean delete(String id);
+    public boolean delete(String id);
     public SalarySlip getById(String id);
     public List<SalarySlip> getByEmployeeId(String employeeId);
     public List<SalarySlip> getByMonth(String month);
-    public SalarySlip getLatestSalarySlip(List<SalarySlip> salarySlips);
-
-
+    public SalarySlip getLatestSalarySlip(String employeeId);
 
 }

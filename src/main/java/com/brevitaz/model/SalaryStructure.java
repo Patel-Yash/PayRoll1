@@ -1,5 +1,7 @@
 package com.brevitaz.model;
 
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -10,7 +12,12 @@ public class SalaryStructure {
     private String createdBy;
     private Date updatedDate;
     private String updatedBy;
+    private Status status;
+
+    @NotNull
     private List<SalaryIncomeComponent> salaryIncomeComponents;
+
+    @NotNull
     private List<SalaryDeductionComponent> salaryDeductionComponents;
 
     public String getId() {
@@ -53,6 +60,14 @@ public class SalaryStructure {
         this.updatedBy = updatedBy;
     }
 
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
     public List<SalaryIncomeComponent> getSalaryIncomeComponents() {
         return salaryIncomeComponents;
     }
@@ -77,6 +92,7 @@ public class SalaryStructure {
                 ", createdBy='" + createdBy + '\'' +
                 ", updatedDate=" + updatedDate +
                 ", updatedBy='" + updatedBy + '\'' +
+                ", status=" + status +
                 ", salaryIncomeComponents=" + salaryIncomeComponents +
                 ", salaryDeductionComponents=" + salaryDeductionComponents +
                 '}';

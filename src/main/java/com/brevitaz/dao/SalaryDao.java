@@ -7,7 +7,11 @@ public interface SalaryDao
 {
     public boolean create(Salary salary) ;
     public List<Salary> getAll() ;
-    public boolean update(Salary salary,String id) ;
-    public boolean delete(String id);
+    public boolean update(String id,Salary salary) ;
+    //public boolean delete(String id);
     public Salary getById(String id);
+    public Salary getLatestSalary(List<Salary> salaries);
+    public List<Salary> getByEmployeeId(String employeeId);
+
+
 }

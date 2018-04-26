@@ -8,14 +8,7 @@ public class SalaryIncomeComponent {
     private String name;
     private Type type;
     private double value;
-
-    public Type getType() {
-        return type;
-    }
-
-    public void setType(Type type) {
-        this.type = type;
-    }
+    private double amount;
 
     public String getId() {
         return id;
@@ -41,6 +34,14 @@ public class SalaryIncomeComponent {
         this.name = name;
     }
 
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+
     public double getValue() {
         return value;
     }
@@ -49,6 +50,13 @@ public class SalaryIncomeComponent {
         this.value = value;
     }
 
+    public double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
+    }
 
     @Override
     public String toString() {
@@ -58,6 +66,7 @@ public class SalaryIncomeComponent {
                 ", name='" + name + '\'' +
                 ", type=" + type +
                 ", value=" + value +
+                ", amount=" + amount +
                 '}';
     }
 

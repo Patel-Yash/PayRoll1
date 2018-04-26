@@ -1,10 +1,11 @@
 package com.brevitaz.controller;
 
-import com.brevitaz.dao.SalaryStructureDao;
 import com.brevitaz.model.SalaryStructure;
+import com.brevitaz.service.SalaryStructureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -12,33 +13,39 @@ import java.util.List;
 public class SalaryStructureController {
 
     @Autowired
-    private SalaryStructureDao salaryStructureDao;
+    private SalaryStructureService salaryStructureService;
 
-    @RequestMapping(method = RequestMethod.POST)
-    public boolean create(@RequestBody SalaryStructure salaryStructure)  {
-        return salaryStructureDao.create(salaryStructure);
+    @RequestMapping(value = "",method = RequestMethod.POST)
+    public boolean create(@Valid @RequestBody SalaryStructure salaryStructure)  {
+        return salaryStructureService.create(salaryStructure);
     }
 
     @RequestMapping(value = "/{id}",method = RequestMethod.GET)
     public SalaryStructure getById( @PathVariable String id) {
-        return salaryStructureDao.getById(id);
+        return salaryStructureService.getById(id);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public boolean update(@RequestBody SalaryStructure salaryStructure, @PathVariable String id) {
-        return salaryStructureDao.update(salaryStructure,id);
+    public boolean update(@PathVariable String id,@RequestBody SalaryStructure salaryStructure) {
+        return salaryStructureService.update(id,salaryStructure);
 
     }
 
     @RequestMapping(value = "/{id}", method = {RequestMethod.DELETE})
     public boolean delete(@PathVariable String id) {
-        return salaryStructureDao.delete(id);
+        return salaryStructureService.delete(id);
 
+    }
+
+    @RequestMapping(value = "latest-structure",method = {RequestMethod.GET})
+    public SalaryStructure getLatestSalaryStructure()
+    {
+        return salaryStructureService.getLatestSalaryStructure();
     }
 
     @RequestMapping(method = RequestMethod.GET)
     public List<SalaryStructure> getAll() {
-        return salaryStructureDao.getAll();
+        return salaryStructureService.getAll();
 
     }
 

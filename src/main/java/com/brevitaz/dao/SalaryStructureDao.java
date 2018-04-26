@@ -7,7 +7,8 @@ public interface SalaryStructureDao
 {
     public boolean create(SalaryStructure salaryStructure) ;
     public List<SalaryStructure> getAll() ;
-    public boolean update(SalaryStructure salaryStructure,String id) ;
-    public boolean delete(String id);
+    public boolean update(String id,SalaryStructure salaryStructure) ;
+   // public boolean delete(String id);
+    public SalaryStructure getLatestSalaryStructure();
     public SalaryStructure getById(String id);
 }

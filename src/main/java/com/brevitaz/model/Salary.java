@@ -1,6 +1,7 @@
 package com.brevitaz.model;
 
 import java.util.Date;
+import java.util.List;
 
 public class Salary {
 
@@ -14,6 +15,9 @@ public class Salary {
     private String createdBy;
     private Date updatedDate;
     private String updatedBy;
+    private Status status;
+    private List<SalaryIncomeComponent> salaryIncomeComponents;
+    private List<SalaryDeductionComponent> salaryDeductionComponents;
 
     public String getId() {
         return id;
@@ -95,6 +99,30 @@ public class Salary {
         this.updatedBy = updatedBy;
     }
 
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public List<SalaryIncomeComponent> getSalaryIncomeComponents() {
+        return salaryIncomeComponents;
+    }
+
+    public void setSalaryIncomeComponents(List<SalaryIncomeComponent> salaryIncomeComponents) {
+        this.salaryIncomeComponents = salaryIncomeComponents;
+    }
+
+    public List<SalaryDeductionComponent> getSalaryDeductionComponents() {
+        return salaryDeductionComponents;
+    }
+
+    public void setSalaryDeductionComponents(List<SalaryDeductionComponent> salaryDeductionComponents) {
+        this.salaryDeductionComponents = salaryDeductionComponents;
+    }
+
     @Override
     public String toString() {
         return "Salary{" +
@@ -108,6 +136,9 @@ public class Salary {
                 ", createdBy='" + createdBy + '\'' +
                 ", updatedDate=" + updatedDate +
                 ", updatedBy='" + updatedBy + '\'' +
+                ", status=" + status +
+                ", salaryIncomeComponents=" + salaryIncomeComponents +
+                ", salaryDeductionComponents=" + salaryDeductionComponents +
                 '}';
     }
 }
