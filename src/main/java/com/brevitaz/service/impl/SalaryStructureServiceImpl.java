@@ -11,7 +11,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class SalaryStructureServiceImpl implements SalaryStructureService {
+public class SalaryStructureServiceImpl implements SalaryStructureService //TODO:validations remaining
+{
 
     @Autowired
     private SalaryStructureDao salaryStructureDao;

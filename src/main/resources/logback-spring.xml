@@ -13,14 +13,14 @@
 
     <!-- The FILE and ASYNC appenders are here as examples for a production configuration -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>/var/log/erpsystem/userprofile/userprofile.log</file>
+        <file>/var/log/payroll1/payroll1.log</file>
         <append>true</append>
         <encoder>
             <charset>utf-8</charset>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%p] %c - %m%n</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>erpsystem/user-profile/%d{yyyy-MM, aux}/event-history-%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <fileNamePattern>payroll1/%d{yyyy-MM, aux}/event-history-%d{yyyy-MM-dd}.log.gz</fileNamePattern>
             <maxHistory>90</maxHistory>
         </rollingPolicy>
     </appender>
@@ -45,3 +45,6 @@
     </root>
 
 </configuration>
+
+
+

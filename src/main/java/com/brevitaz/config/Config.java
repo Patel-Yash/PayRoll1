@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +15,8 @@ public class Config
 {
     private RestHighLevelClient client;
     private ObjectMapper objectMapper;
+
+    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Config.class);
 
     @Value("${Host-Name}")
     private String hostName;

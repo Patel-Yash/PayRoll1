@@ -12,7 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class SalaryServiceImpl implements SalaryService {
+public class SalaryServiceImpl implements SalaryService//TODO:validations remaining
+ {
 
     @Autowired
     private SalaryDao salaryDao;

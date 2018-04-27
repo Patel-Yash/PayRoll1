@@ -2,18 +2,22 @@ package com.brevitaz.service.impl;
 
 import com.brevitaz.dao.SalarySlipDao;
 import com.brevitaz.errors.InvalidIdException;
-import com.brevitaz.model.SalarySlip;
-import com.brevitaz.model.Status;
+import com.brevitaz.model.*;
+import com.brevitaz.service.EmployeeService;
 import com.brevitaz.service.SalaryService;
 import com.brevitaz.service.SalarySlipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class SalarySlipServiceImpl implements SalarySlipService
+public class SalarySlipServiceImpl implements SalarySlipService//TODO:validations remaining
 {
+    @Autowired
+    private EmployeeService employeeService;
+
     @Autowired
     private SalarySlipDao salarySlipDao;
 
@@ -26,7 +30,56 @@ public class SalarySlipServiceImpl implements SalarySlipService
     @Override
     public boolean create(SalarySlip salarySlip)//TODO:Integrate with LM module.
     {
-        return false;
+        Employee employee1 = employeeService.getById(salarySlip.getEmployeeId());
+        if (employee1.getId().equals(salarySlip.getEmployeeId()))
+        {
+            Salary salary = salaryService.getLatestSalary(salarySlip.getEmployeeId());
+            salarySlip.setNetMonthlySalary(salary.getGrossSalary()/12);
+
+            salarySlip.setEmployeeName(employee1.getName());
+            salarySlip.setEmployeeDateOfJoining(employee1.getDateOfJoining());
+            salarySlip.setEmployeeDepartment(employee1.getDepartment());
+            salarySlip.setEmployeeDesignation(employee1.getDesignation());
+            salarySlip.setEmployeeLocation(employee1.getLocation());
+
+
+            List<SalaryIncomeComponent> salaryIncomeComponents = new ArrayList<>();
+            for (SalaryIncomeComponent sIC:salary.getSalaryIncomeComponents())
+            {
+                sIC.setAmount(sIC.getAmount()/12);
+                salaryIncomeComponents.add(sIC);
+            }
+            System.out.println("SIC"+salaryIncomeComponents);
+
+            List<SalaryDeductionComponent> salaryDeductionComponents = new ArrayList<>();
+            for (SalaryDeductionComponent sDC:salary.getSalaryDeductionComponents())
+            {
+                sDC.setAmount(sDC.getAmount()/12);
+                salaryDeductionComponents.add(sDC);
+            }
+            System.out.println("SDC"+salaryDeductionComponents);
+
+
+            double totalDeductionAmount = 0;
+
+            for (SalaryDeductionComponent salaryDeductionComponent:salaryDeductionComponents)
+            {
+                totalDeductionAmount+=salaryDeductionComponent.getAmount();
+            }
+            System.out.println(totalDeductionAmount);
+
+            salarySlip.setNonPayableAmount(totalDeductionAmount);
+
+            salarySlip.setMonthlySalary(salarySlip.getNetMonthlySalary()-totalDeductionAmount+salarySlip.getVariablePay());
+
+            System.out.println(salarySlip.getMonthlySalary());
+
+            return salarySlipDao.create(salarySlip);
+        }
+        else
+        {
+            throw new InvalidIdException("Employee Doesn't exists!!");
+        }
     }
 
     @Override
@@ -45,7 +98,7 @@ public class SalarySlipServiceImpl implements SalarySlipService
     }
 
     @Override
-    public boolean update( String id,SalarySlip salarySlip)//TODO:Remaining!!
+    public boolean update( String id,SalarySlip salarySlip)
     {
         SalarySlip salarySlip1 = salarySlipDao.getById(id);
         if (salarySlip1.getStatus()!=Status.CANCELLED &&
@@ -53,11 +106,11 @@ public class SalarySlipServiceImpl implements SalarySlipService
         {
             if (salarySlip.getVariablePay()!=salarySlip1.getVariablePay())
             {
-                return salarySlipDao.update(id,salarySlip);
+                return salarySlipService.create(salarySlip);
             }
             else
             {
-                return salarySlipService.create(salarySlip);
+                return salarySlipDao.update(id,salarySlip);
             }
         }
         else

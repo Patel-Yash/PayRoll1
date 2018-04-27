@@ -2,6 +2,7 @@ package com.brevitaz.dao.impl;
 
 import com.brevitaz.config.Config;
 import com.brevitaz.dao.EmployeeDao;
+import com.brevitaz.errors.InvalidIdException;
 import com.brevitaz.model.Employee;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,6 +20,7 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -38,6 +40,8 @@ public class EmployeeDaoImpl implements EmployeeDao
     @Autowired
     private Config config;
 
+    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(EmployeeDaoImpl.class);
+
 
     @Override
     public boolean create(Employee employee){
@@ -55,14 +59,13 @@ public class EmployeeDaoImpl implements EmployeeDao
             System.out.println(indexResponse);
             if(indexResponse.status() == RestStatus.CREATED)
             {
+                LOGGER.info("Employee Created!!"+employee);
                 return true;
             }
-            else
-            {
-                return false;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            LOGGER.error("Error while serialiazing employee: {}",e);
         }
         return false;
     }
@@ -89,12 +92,9 @@ public class EmployeeDaoImpl implements EmployeeDao
             {
                 return employees;
             }
-            else
-            {
-                return null;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        }
+        catch (IOException e) {
+            LOGGER.error("Error while serialiazing employee: {}",e);
         }
         return null;
 
@@ -111,14 +111,12 @@ public class EmployeeDaoImpl implements EmployeeDao
             System.out.println("Update: "+updateResponse);
             if(updateResponse.status() == RestStatus.OK)
             {
+                LOGGER.info("Update Successfull!!");
                 return true;
             }
-            else
-            {
-                return false;
-            }
+
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Error while serialiazing employee: {}",e);
         }
         return false;
     }
@@ -134,14 +132,11 @@ public class EmployeeDaoImpl implements EmployeeDao
             DeleteResponse response = config.getClient().delete(request);
             if(response.status() == RestStatus.OK)
             {
+                LOGGER.info("Employee Deleted!!!");
                 return true;
             }
-            else
-            {
-                return false;
-            }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Error while serialiazing employee: {}",e);
         }
         return false;
     }
@@ -153,21 +148,22 @@ public class EmployeeDaoImpl implements EmployeeDao
                 TYPE_NAME,
                 id);
 
-
         try {
 
             GetResponse response = config.getClient().get(getRequest);
-            Employee employee = config.getObjectMapper().readValue(response.getSourceAsString(), Employee.class);
             if (response.isExists()) {
+                Employee employee = config.getObjectMapper().readValue(response.getSourceAsString(), Employee.class);
+                LOGGER.info("Employee is:-" +employee);
                 return employee;
             } else {
+                LOGGER.info("Employee doesnot exists!!!");
                 return null;
             }
         }
-        catch (Exception e)
+        catch (IOException | NullPointerException e)
         {
-            e.printStackTrace();
+            LOGGER.error("Employee doesn't exists!!!",e);
+            throw new InvalidIdException("Doesn't exists!!!");
         }
-        return null;
     }
 }
